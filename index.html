@@ -330,6 +330,64 @@ Gerar PDF
 
 <script>
 
+const destinatarios = {
+
+crcLisboa:{
+nome:"Conservatória dos Registros Centrais - Lisboa",
+endereco:[
+"Rua Rodrigo da Fonseca, Nº 198",
+"Lisboa - Portugal",
+"CP: 1099-003",
+"Telefone: (+351) 211 950 500",
+"E-mail: crcentrais.nacionalidade@irn.mj.pt"
+]
+},
+
+porto:{
+nome:"Conservatória Central do Porto",
+endereco:[
+"Rua do Cunha 404",
+"Porto - Portugal",
+"CP: 4200-270",
+"Telefone: +351 226 052 330",
+"E-mail: arquivocentral.porto@irn.mj.pt"
+]
+},
+
+cinthia:{
+nome:"Cinthia Rocha Mello",
+endereco:[
+"Rua Antonio Alves do Espirito Santo, n. 3",
+"Lote 1, 4D, Quinta da Gordalina",
+"CP 2415-440 Leiria - Portugal",
+"Telefone: +351 910 382 966",
+"E-mail: cinthiarocha@yahoo.com.br"
+]
+},
+
+katley:{
+nome:"Katley Juliana Tomaz",
+endereco:[
+"Rua Castilho, n.º 39 – 12.º F",
+"1250-068 Lisboa - Portugal",
+"Telefone: +351 96107-0568",
+"E-mail: katleyjulianatomaz-64724p@adv.oa.pt"
+]
+},
+
+carla:{
+nome:"Dra. Carla Ossuna",
+endereco:[
+"Av. Defensores de Chaves 4",
+"Edifício IDEA",
+"1000-117 Lisboa - Portugal",
+"Telefone: +351 928 046 031",
+"E-mail: ossunaadvocacia@gmail.com"
+]
+}
+
+};
+
 function toggleClienteManual(){
 
 const valor = document.getElementById("destinatario").value;
@@ -470,19 +528,115 @@ const requerente=document.getElementById("requerente").value;
 const atividade=document.getElementById("atividade").value;
 const processo=document.getElementById("processo").value;
 
-pdf.setFont("helvetica","bold");
-pdf.setFontSize(22);
+const destinatarioKey=document.getElementById("destinatario").value;
 
-pdf.text("Checklist Portugal",20,25);
+let destinatario = destinatarios[destinatarioKey];
+
+if(destinatarioKey === "clienteManual"){
+
+destinatario = {
+nome:"Cliente",
+endereco:[
+document.getElementById("clienteEndereco").value,
+`Telefone: ${document.getElementById("clienteTelefone").value}`,
+`E-mail: ${document.getElementById("clienteEmail").value}`
+]
+};
+
+}
+
+const tipoTexto=document.getElementById("tipoProcesso").selectedOptions[0].text;
+
+pdf.setFillColor(255,255,255);
+
+pdf.rect(0,0,210,297,'F');
+
+pdf.setTextColor(107,0,47);
+
+pdf.setFont("helvetica","bold");
+
+pdf.setFontSize(28);
+
+pdf.text("Check List Portugal",20,28);
+
+pdf.setFontSize(15);
+
+pdf.text(`Processo de ${tipoTexto}`,20,40);
+
+pdf.setFont("helvetica","bold");
+
+pdf.setTextColor(107,0,47);
 
 pdf.setFontSize(13);
 
-pdf.text(`Cliente: ${cliente}`,20,50);
-pdf.text(`Requerente: ${requerente}`,20,65);
-pdf.text(`Atividade: ${atividade}`,20,80);
-pdf.text(`Processo: ${processo}`,20,95);
+pdf.text("Endereço de Envio",145,28);
 
-let y = 125;
+let enderecoY = 42;
+
+pdf.setFont("helvetica","normal");
+
+pdf.setTextColor(31,41,55);
+
+pdf.setFontSize(8.5);
+
+if(destinatario){
+
+destinatario.endereco.forEach(item=>{
+
+const linhas = pdf.splitTextToSize(item,42);
+
+pdf.text(linhas,145,enderecoY);
+
+enderecoY += (linhas.length * 5) + 3;
+
+});
+
+}
+
+pdf.setTextColor(31,41,55);
+
+pdf.setFontSize(13);
+
+const labelX = 20;
+const valueX = 55;
+
+let y = 68;
+
+function addLinha(titulo,valor){
+
+pdf.setFont("helvetica","bold");
+
+pdf.text(titulo,labelX,y);
+
+pdf.setFont("helvetica","normal");
+
+pdf.text(valor || "-",valueX,y);
+
+y += 15;
+
+}
+
+addLinha("Cliente:",cliente);
+
+addLinha("Requerente:",requerente);
+
+addLinha("Destinatário:",destinatario?.nome || "-");
+
+addLinha("Atividade:",atividade);
+
+addLinha("Processo:",processo);
+
+const inicioDocs = Math.max(y + 15, enderecoY + 20);
+
+pdf.setFont("helvetica","bold");
+
+pdf.setTextColor(107,0,47);
+
+pdf.setFontSize(18);
+
+pdf.text("Documentos",20,inicioDocs);
+
+let docY = inicioDocs + 18;
 
 const items=document.querySelectorAll(".check-item");
 
@@ -492,9 +646,65 @@ const check=item.querySelector("input[type='checkbox']");
 
 if(check.checked){
 
-pdf.text(`• ${check.value}`,25,y);
+let texto = check.value;
 
-y += 15;
+const extra=item.querySelector(".outros-input");
+
+if(
+check.value === "Outros"
+&& extra
+&& extra.value.trim() !== ""
+){
+
+const docs = extra.value
+.split('\n')
+.filter(doc => doc.trim() !== '');
+
+texto = docs.map(doc => doc.trim());
+
+}
+
+if(Array.isArray(texto)){
+
+texto.forEach(itemTexto=>{
+
+pdf.setFillColor(107,0,47);
+
+pdf.circle(24,docY-1,1.1,'F');
+
+pdf.setTextColor(31,41,55);
+
+pdf.setFont("helvetica","normal");
+
+pdf.setFontSize(10.5);
+
+const quebrado = pdf.splitTextToSize(itemTexto,135);
+
+pdf.text(quebrado,30,docY+1);
+
+docY += (quebrado.length * 5) + 4;
+
+});
+
+}else{
+
+pdf.setFillColor(107,0,47);
+
+pdf.circle(24,docY-1,1.1,'F');
+
+pdf.setTextColor(31,41,55);
+
+pdf.setFont("helvetica","normal");
+
+pdf.setFontSize(10.5);
+
+const quebrado = pdf.splitTextToSize(texto,135);
+
+pdf.text(quebrado,30,docY+1);
+
+docY += (quebrado.length * 5) + 4;
+
+}
 
 }
 
