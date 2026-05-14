@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checklist Portugal</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Outfit',sans-serif;
+background:#f5f6f8;
+padding:50px 20px;
+color:#1f2937;
+}
+
+.container{
+max-width:950px;
+margin:auto;
+background:white;
+border-radius:30px;
+padding:45px;
+border:1px solid #ececec;
+box-shadow:0 10px 40px rgba(0,0,0,0.06);
+}
+
+.topo{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:40px;
+padding-bottom:25px;
+}
+
+.logo{
+font-size:42px;
+font-weight:700;
+letter-spacing:-2px;
+color:#6b002f;
+}
+
+.badge{
+background:#6b002f;
+color:white;
+padding:12px 18px;
+border-radius:999px;
+font-size:14px;
+font-weight:600;
+}
+
+.section-title{
+font-size:15px;
+text-transform:uppercase;
+letter-spacing:1.5px;
+color:#6b002f;
+margin-bottom:18px;
+font-weight:600;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+margin-bottom:40px;
+}
+
+.input-group{
+display:flex;
+flex-direction:column;
+}
+
+.input-group.full{
+grid-column:1/-1;
+}
+
+label{
+font-size:14px;
+margin-bottom:10px;
+color:#6b7280;
+font-weight:500;
+}
+
+input,
+select,
+textarea{
+width:100%;
+border-radius:18px;
+padding:16px 18px;
+font-size:16px;
+font-family:'Outfit',sans-serif;
+background:#fafafa;
+color:#1f2937;
+border:1px solid #e5e7eb;
+transition:0.2s;
+}
+
+input,
+select{
+height:56px;
+}
+
+textarea{
+min-height:120px;
+resize:vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+outline:none;
+border-color:#6b002f;
+box-shadow:0 0 0 4px rgba(107,0,47,0.06);
+}
+
+.checklist{
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.check-item{
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+padding:20px;
+border-radius:20px;
+background:#fafafa;
+border:1px solid #ececec;
+}
+
+.check-header{
+display:flex;
+align-items:center;
+gap:14px;
+width:100%;
+}
+
+.check-item input[type="checkbox"]{
+width:20px;
+height:20px;
+accent-color:#6b002f;
+}
+
+.check-item label{
+margin:0;
+font-size:17px;
+color:#1f2937;
+cursor:pointer;
+}
+
+.outros-input{
+margin-top:14px;
+}
+
+.botoes{
+display:flex;
+gap:14px;
+margin-top:35px;
+}
+
+button{
+flex:1;
+height:62px;
+border:none;
+border-radius:20px;
+background:#6b002f;
+color:white;
+font-size:17px;
+font-family:'Outfit',sans-serif;
+font-weight:600;
+cursor:pointer;
+}
+
+button:hover{
+background:#520024;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="topo">
+
+<div class="logo">
+Check List Portugal
+</div>
+
+<div class="badge">
+Cidadania4U
+</div>
+
+</div>
+
+<div class="section-title">
+Dados do Processo
+</div>
+
+<div class="grid">
+
+<div class="input-group">
+<label>Nome do Cliente</label>
+<input type="text" id="cliente">
+</div>
+
+<div class="input-group">
+<label>Nome do Requerente</label>
+<input type="text" id="requerente">
+</div>
+
+<div class="input-group">
+
+<label>Destinatário</label>
+
+<select id="destinatario" onchange="toggleClienteManual()">
+
+<option value="">Selecione</option>
+
+<option value="crcLisboa">
+Conservatória dos Registros Centrais - Lisboa
+</option>
+
+<option value="porto">
+Conservatória Central do Porto
+</option>
+
+<option value="cinthia">
+Cinthia Rocha Mello
+</option>
+
+<option value="katley">
+Katley Juliana Tomaz
+</option>
+
+<option value="carla">
+Dra. Carla Ossuna
+</option>
+
+<option value="clienteManual">
+Cliente
+</option>
+
+</select>
+
+</div>
+
+<div id="destinatarioManual" class="grid" style="display:none; margin-top:-10px;">
+
+<div class="input-group full">
+<label>Endereço do Cliente</label>
+<textarea id="clienteEndereco"></textarea>
+</div>
+
+<div class="input-group">
+<label>Telefone do Cliente</label>
+<input type="text" id="clienteTelefone">
+</div>
+
+<div class="input-group">
+<label>E-mail do Cliente</label>
+<input type="text" id="clienteEmail">
+</div>
+
+</div>
+
+<div class="input-group">
+<label>Atividade</label>
+<input type="text" id="atividade">
+</div>
+
+<div class="input-group">
+<label>Número do Processo</label>
+<input type="text" id="processo">
+</div>
+
+<div class="input-group full">
+
+<label>Tipo de Processo</label>
+
+<select id="tipoProcesso" onchange="mostrarChecklist()">
+
+<option value="">Selecione</option>
+
+<option value="transcricao">Transcrição</option>
+<option value="netoMaior">Neto Maior</option>
+<option value="netoMenor">Neto Menor</option>
+<option value="filhoMaior">Filho Maior</option>
+<option value="filhoMenor">Filho Menor</option>
+<option value="avulsos">Avulsos</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="section-title">
+Documentos
+</div>
+
+<div id="checklists" class="checklist"></div>
+
+<div class="botoes">
+
+<button onclick="gerarPDF()">
+Gerar PDF
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const destinatarios = {
+
+crcLisboa:{
+nome:"Conservatória dos Registros Centrais - Lisboa",
+endereco:[
+"Rua Rodrigo da Fonseca, Nº 198",
+"Lisboa - Portugal",
+"CP: 1099-003",
+"Telefone: (+351) 211 950 500",
+"E-mail: crcentrais.nacionalidade@irn.mj.pt"
+]
+},
+
+porto:{
+nome:"Conservatória Central do Porto",
+endereco:[
+"Rua do Cunha 404",
+"Porto - Portugal",
+"CP: 4200-270",
+"Telefone: +351 226 052 330",
+"E-mail: arquivocentral.porto@irn.mj.pt"
+]
+},
+
+cinthia:{
+nome:"Cinthia Rocha Mello",
+endereco:[
+"Rua Antonio Alves do Espirito Santo, n. 3",
+"Lote 1, 4D, Quinta da Gordalina",
+"CP 2415-440 Leiria - Portugal",
+"Telefone: +351 910 382 966",
+"E-mail: cinthiarocha@yahoo.com.br"
+]
+},
+
+katley:{
+nome:"Katley Juliana Tomaz",
+endereco:[
+"Rua Castilho, n.º 39 – 12.º F",
+"1250-068 Lisboa - Portugal",
+"Telefone: +351 96107-0568",
+"E-mail: katleyjulianatomaz-64724p@adv.oa.pt"
+]
+},
+
+carla:{
+nome:"Dra. Carla Ossuna",
+endereco:[
+"Av. Defensores de Chaves 4",
+"Edifício IDEA",
+"1000-117 Lisboa - Portugal",
+"Telefone: +351 928 046 031",
+"E-mail: ossunaadvocacia@gmail.com"
+]
+}
+
+};
+
+function toggleClienteManual(){
+
+const valor = document.getElementById("destinatario").value;
+
+const div = document.getElementById("destinatarioManual");
+
+div.style.display = valor === "clienteManual"
+? "grid"
+: "none";
+
+}
+
+const modelos={
+
+transcricao:[
+"Assento de Nascimento do Português",
+"Nascimento do(a) cônjuge",
+"Certidão de Casamento",
+"Documento de identificação",
+"Procuração do requerente",
+"Outros"
+],
+
+netoMaior:[
+"Assento de Nascimento do Português",
+"Nascimento do(a) filho(a) do(a) Português",
+"Nascimento do(a) neto(a) do(a) Português",
+"Procuração do requerente",
+"Documento de identificação do requerente",
+"Outros"
+],
+
+netoMenor:[
+"Assento de Nascimento do Português",
+"Nascimento do(a) filho(a) do(a) Português",
+"Nascimento do(a) neto(a) do(a) Português",
+"Procuração do requerente",
+"Documento de identificação do requerente menor",
+"Documento de identificação do genitor",
+"Documento de identificação da genitora",
+"Outros"
+],
+
+filhoMaior:[
+"Assento de Nascimento do Português",
+"Nascimento do(a) filho(a) do(a) Português",
+"Procuração do requerente",
+"Documento de identificação do requerente",
+"Outros"
+],
+
+filhoMenor:[
+"Assento de Nascimento do Português",
+"Nascimento do(a) filho(a) do(a) Português",
+"Procuração do requerente",
+"Documento de identificação do requerente menor",
+"Documento de identificação do genitor",
+"Documento de identificação da genitora",
+"Outros"
+],
+
+avulsos:[
+"Outros"
+]
+
+};
+
+function mostrarChecklist(){
+
+const tipo=document.getElementById("tipoProcesso").value;
+
+const div=document.getElementById("checklists");
+
+div.innerHTML="";
+
+if(!modelos[tipo]) return;
+
+modelos[tipo].forEach(doc=>{
+
+const wrapper=document.createElement("div");
+
+wrapper.className="check-item";
+
+const header=document.createElement("div");
+
+header.className="check-header";
+
+const checkbox=document.createElement("input");
+
+checkbox.type="checkbox";
+
+checkbox.value=doc;
+
+const label=document.createElement("label");
+
+label.innerText = doc;
+
+header.appendChild(checkbox);
+
+header.appendChild(label);
+
+wrapper.appendChild(header);
+
+if(doc==="Outros"){
+
+const input=document.createElement("textarea");
+
+input.placeholder="Digite um documento por linha";
+
+input.className="outros-input";
+
+input.style.display="none";
+
+checkbox.addEventListener("change",()=>{
+
+input.style.display = checkbox.checked ? "block" : "none";
+
+});
+
+wrapper.appendChild(input);
+
+}
+
+div.appendChild(wrapper);
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
