@@ -516,7 +516,49 @@ div.appendChild(wrapper);
 });
 
 }
+async function gerarPDF(){
 
+const { jsPDF } = window.jspdf;
+
+const pdf = new jsPDF();
+
+const cliente=document.getElementById("cliente").value;
+const requerente=document.getElementById("requerente").value;
+const atividade=document.getElementById("atividade").value;
+const processo=document.getElementById("processo").value;
+
+pdf.setFont("helvetica","bold");
+pdf.setFontSize(20);
+
+pdf.text("Checklist Portugal",20,20);
+
+pdf.setFontSize(12);
+
+pdf.text(`Cliente: ${cliente}`,20,40);
+pdf.text(`Requerente: ${requerente}`,20,50);
+pdf.text(`Atividade: ${atividade}`,20,60);
+pdf.text(`Processo: ${processo}`,20,70);
+
+let y = 90;
+
+const items=document.querySelectorAll(".check-item");
+
+items.forEach(item=>{
+
+const check=item.querySelector("input[type='checkbox']");
+
+if(check.checked){
+
+pdf.text(`• ${check.value}`,20,y);
+
+y += 10;
+
+}
+
+});
+
+pdf.save(`Checklist-${requerente}.pdf`);
+  
 </script>
 
 </body>
