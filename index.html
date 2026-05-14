@@ -471,18 +471,18 @@ const atividade=document.getElementById("atividade").value;
 const processo=document.getElementById("processo").value;
 
 pdf.setFont("helvetica","bold");
-pdf.setFontSize(20);
+pdf.setFontSize(22);
 
-pdf.text("Checklist Portugal",20,20);
+pdf.text("Checklist Portugal",20,25);
 
-pdf.setFontSize(12);
+pdf.setFontSize(13);
 
-pdf.text(`Cliente: ${cliente}`,20,40);
-pdf.text(`Requerente: ${requerente}`,20,50);
-pdf.text(`Atividade: ${atividade}`,20,60);
-pdf.text(`Processo: ${processo}`,20,70);
+pdf.text(`Cliente: ${cliente}`,20,50);
+pdf.text(`Requerente: ${requerente}`,20,65);
+pdf.text(`Atividade: ${atividade}`,20,80);
+pdf.text(`Processo: ${processo}`,20,95);
 
-let y = 90;
+let y = 125;
 
 const items=document.querySelectorAll(".check-item");
 
@@ -492,9 +492,9 @@ const check=item.querySelector("input[type='checkbox']");
 
 if(check.checked){
 
-pdf.text(`• ${check.value}`,20,y);
+pdf.text(`• ${check.value}`,25,y);
 
-y += 10;
+y += 15;
 
 }
 
